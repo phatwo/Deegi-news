@@ -38,55 +38,88 @@ void main() {
     );
   });
 
-  test('retourne les données de l API quand la requête réussit', () async {
-    when(() => remoteDataSource.getNews())
-        .thenAnswer((_) async => [article]);
+  test(
+    'retourne les données de l API quand la requête réussit',
+    () async {
+      when(() => remoteDataSource.getNews())
+          .thenAnswer((_) async => [article]);
 
-    when(() => localDataSource.saveNews([article]))
-        .thenAnswer((_) async {});
+      when(() => localDataSource.saveNews([article]))
+          .thenAnswer((_) async {});
 
-    final result = await repository.getNews();
+      final result = await repository.getNews();
 
-    expect(result, [article]);
+      expect(result, [article]);
 
-    verify(() => remoteDataSource.getNews()).called(1);
-    verify(() => localDataSource.saveNews([article])).called(1);
-  });
+      verify(() => remoteDataSource.getNews()).called(1);
+      verify(() => localDataSource.saveNews([article])).called(1);
+    },
+  );
 
-  test('retourne le cache quand l API échoue', () async {
-    when(() => remoteDataSource.getNews()).thenThrow(
-      DioException(
-        requestOptions: RequestOptions(path: '/rest/v1/news'),
-      ),
-    );
+  test(
+    'retourne le cache quand l API échoue',
+    () async {
+      when(() => remoteDataSource.getNews()).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(
+            path: '/rest/v1/news',
+          ),
+        ),
+      );
 
-    when(() => localDataSource.getCachedNews())
-        .thenAnswer((_) async => [article]);
+      when(() => localDataSource.getCachedNews())
+          .thenAnswer((_) async => [article]);
 
-    final result = await repository.getNews();
+      final result = await repository.getNews();
 
-    expect(result, [article]);
+      expect(result, [article]);
 
-    verify(() => remoteDataSource.getNews()).called(1);
-    verify(() => localDataSource.getCachedNews()).called(1);
-  });
+      verify(() => remoteDataSource.getNews()).called(1);
+      verify(() => localDataSource.getCachedNews()).called(1);
+    },
+  );
 
-  test('remonte l erreur quand API et cache échouent', () async {
-    final error = DioException(
-      requestOptions: RequestOptions(path: '/rest/v1/news'),
-    );
+  test(
+    'remonte l erreur quand API et cache échouent',
+    () async {
+      final error = DioException(
+        requestOptions: RequestOptions(
+          path: '/rest/v1/news',
+        ),
+      );
 
-    when(() => remoteDataSource.getNews()).thenThrow(error);
+      when(() => remoteDataSource.getNews())
+          .thenThrow(error);
 
-    when(() => localDataSource.getCachedNews())
-        .thenAnswer((_) async => []);
+      when(() => localDataSource.getCachedNews())
+          .thenAnswer((_) async => []);
 
-    expect(
-      () => repository.getNews(),
-      throwsA(isA<DioException>()),
-    );
+      expect(
+        () => repository.getNews(),
+        throwsA(isA<DioException>()),
+      );
 
-    verify(() => remoteDataSource.getNews()).called(1);
-    verify(() => localDataSource.getCachedNews()).called(1);
-  });
+      verify(() => remoteDataSource.getNews()).called(1);
+      verify(() => localDataSource.getCachedNews()).called(1);
+    },
+  );
+
+  test(
+    'sauvegarde les articles après une récupération réussie',
+    () async {
+      when(() => remoteDataSource.getNews())
+          .thenAnswer((_) async => [article]);
+
+      when(() => localDataSource.saveNews([article]))
+          .thenAnswer((_) async {});
+
+      final result = await repository.getNews();
+
+      expect(result.length, 1);
+      expect(result.first.title, 'Test article');
+
+      verify(() => remoteDataSource.getNews()).called(1);
+      verify(() => localDataSource.saveNews([article])).called(1);
+    },
+  );
 }
