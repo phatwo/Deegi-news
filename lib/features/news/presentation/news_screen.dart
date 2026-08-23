@@ -128,7 +128,7 @@ class NewsScreen extends ConsumerWidget {
                             context,
                             MaterialPageRoute(
                               builder: (_) => ArticleDetailScreen(
-                                article: article,
+                                articleId: article.id,
                               ),
                             ),
                           );

@@ -1,68 +1,72 @@
-# DeegiNews
+# DeegiNews 📰
 
-Application Flutter full-stack d'actualités avec authentification,
-API REST, cache local et mode hors-ligne.
+DeegiNews est une application Flutter full-stack d'actualités connectée à une API REST Supabase.
 
-## Fonctionnalités
+L'application propose une authentification utilisateur, la consultation d'actualités, des catégories, le détail d'un article, un cache local avec Hive et un fonctionnement hors ligne.
 
-- Inscription et connexion
+## ✨ Fonctionnalités
+
+- Inscription
+- Connexion
 - Déconnexion
-- Authentification Supabase / JWT
-- Actualités depuis une API REST
-- Catégories
+- Authentification avec Supabase Auth et JWT
+- Renouvellement de session géré par Supabase
+- Liste des actualités
+- Consultation des catégories
 - Détail d'un article
+- Recherche des données via API REST
 - Cache local avec Hive
 - Mode hors-ligne
 - Gestion des erreurs réseau
+- Actualisation des données
 - Navigation avec Riverpod
+- Tests unitaires du Repository
 
-## Architecture
+## 🏗️ Architecture
 
-Feature-First :
+Le projet utilise une architecture **Feature-First** avec séparation des responsabilités.
 
+```text
 lib/
 ├── core/
+│   └── network/
+│       ├── dio_client.dart
+│       ├── auth_interceptor.dart
+│       ├── network_providers.dart
+│       └── connectivity_provider.dart
+│
 ├── features/
 │   ├── auth/
+│   │   ├── data/
+│   │   │   └── auth_repository_impl.dart
+│   │   ├── domain/
+│   │   │   └── auth_repository.dart
+│   │   └── presentation/
+│   │       ├── auth_gate.dart
+│   │       ├── auth_provider.dart
+│   │       ├── login_screen.dart
+│   │       └── register_screen.dart
+│   │
 │   ├── home/
+│   │   └── presentation/
+│   │       └── main_shell.dart
+│   │
 │   ├── news/
+│   │   ├── data/
+│   │   │   ├── news_local_data_source.dart
+│   │   │   ├── news_remote_data_source.dart
+│   │   │   └── news_repository_impl.dart
+│   │   ├── domain/
+│   │   │   ├── news_article.dart
+│   │   │   └── news_repository.dart
+│   │   └── presentation/
+│   │       ├── news_screen.dart
+│   │       ├── categories_screen.dart
+│   │       ├── article_detail_screen.dart
+│   │       └── news_provider.dart
+│   │
 │   └── profile/
+│       └── presentation/
+│           └── profile_screen.dart
+│
 └── main.dart
-
-## Technologies
-
-- Flutter
-- Dart
-- Riverpod
-- Dio
-- Supabase
-- Hive
-- connectivity_plus
-- Mocktail
-
-## API
-
-Les données d'actualités sont stockées dans PostgreSQL
-via Supabase et accessibles avec la Data API REST.
-
-## Cache et mode hors-ligne
-
-Les actualités récupérées depuis l'API sont sauvegardées
-localement avec Hive.
-
-Lorsque l'API devient inaccessible, le Repository récupère
-automatiquement les dernières données disponibles dans le cache.
-
-## Tests
-
-Les tests couvrent notamment :
-
-- récupération réussie depuis l'API
-- fallback vers le cache
-- gestion d'une erreur sans données en cache
-
-## Installation
-
-```bash
-flutter pub get
-flutter run

@@ -23,21 +23,25 @@ class NewsRepositoryImpl implements NewsRepository {
 
       return articles;
     } on DioException {
-      final cachedArticles = await _localDataSource.getCachedNews();
+      final cached = await _localDataSource.getCachedNews();
 
-      if (cachedArticles.isNotEmpty) {
-        return cachedArticles;
-      }
-
-      rethrow;
-    } catch (_) {
-      final cachedArticles = await _localDataSource.getCachedNews();
-
-      if (cachedArticles.isNotEmpty) {
-        return cachedArticles;
+      if (cached.isNotEmpty) {
+        return cached;
       }
 
       rethrow;
     }
+  }
+
+  @override
+  Future<List<NewsArticle>> getNewsByCategory(
+    String category,
+  ) async {
+    return _remoteDataSource.getNewsByCategory(category);
+  }
+
+  @override
+  Future<NewsArticle> getNewsById(int id) async {
+    return _remoteDataSource.getNewsById(id);
   }
 }

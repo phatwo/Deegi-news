@@ -32,3 +32,21 @@ final newsRepositoryProvider = Provider<NewsRepository>((ref) {
 final newsProvider = FutureProvider<List<NewsArticle>>((ref) async {
   return ref.watch(newsRepositoryProvider).getNews();
 });
+
+final categoryNewsProvider =
+    FutureProvider.family<List<NewsArticle>, String>(
+  (ref, category) {
+    return ref
+        .watch(newsRepositoryProvider)
+        .getNewsByCategory(category);
+  },
+);
+
+final articleDetailProvider =
+    FutureProvider.family<NewsArticle, int>(
+  (ref, id) {
+    return ref
+        .watch(newsRepositoryProvider)
+        .getNewsById(id);
+  },
+);
