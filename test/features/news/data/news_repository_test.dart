@@ -122,4 +122,38 @@ void main() {
       verify(() => localDataSource.saveNews([article])).called(1);
     },
   );
+  test(
+  'ne sauvegarde pas les données si la récupération API échoue',
+  () async {
+    final error = DioException(
+      requestOptions: RequestOptions(
+        path: '/rest/v1/news',
+      ),
+    );
+
+    when(
+      () => remoteDataSource.getNews(),
+    ).thenThrow(error);
+
+    when(
+      () => localDataSource.getCachedNews(),
+    ).thenAnswer((_) async => [article]);
+
+    final result = await repository.getNews();
+
+    expect(result, [article]);
+
+    verify(
+      () => remoteDataSource.getNews(),
+    ).called(1);
+
+    verify(
+      () => localDataSource.getCachedNews(),
+    ).called(1);
+
+    verifyNever(
+      () => localDataSource.saveNews(any()),
+    );
+  },
+);
 }
