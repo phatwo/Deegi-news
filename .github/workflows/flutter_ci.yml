@@ -10,7 +10,7 @@ on:
 
 jobs:
   analyze-and-test:
-    name: Analyze & Test
+    name: Analyze and Test
     runs-on: ubuntu-latest
 
     steps:
@@ -23,11 +23,16 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Create .env
+        run: |
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
+          echo "SUPABASE_PUBLISHABLE_KEY=${{ secrets.SUPABASE_PUBLISHABLE_KEY }}" >> .env
+
       - name: Install dependencies
         run: flutter pub get
 
       - name: Analyze
         run: flutter analyze
 
-      - name: Run tests
+      - name: Test
         run: flutter test
